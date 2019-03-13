@@ -66,7 +66,7 @@ class mzMLHandler(xml.sax.ContentHandler):
 			self.aas.append(aa)
 		if tag == 'note' and 'fragment ion mass spectrum' in self.inTag:
 			self.inTag.add('note')
-			self.jsms['ti'] = ''
+#			self.jsms['ti'] = ''
 		if tag == 'GAML:Xdata' and attrs['units'] == 'MASSTOCHARGERATIO':
 			self.inTag.add('GAML:Xdata')
 		if tag == 'GAML:Ydata' and attrs['units'] == 'UNKNOWN':
@@ -77,8 +77,8 @@ class mzMLHandler(xml.sax.ContentHandler):
 			self.inTag.add('GAML:attribute:charge')
 
 	def characters(self, content):
-		if 'note' in self.inTag:
-			self.jsms['ti'] += content
+#		if 'note' in self.inTag:
+#			self.jsms['ti'] += content
 		if 'GAML:Xdata' in self.inTag:
 			self.str += content
 		if 'GAML:Ydata' in self.inTag:
@@ -112,11 +112,13 @@ class mzMLHandler(xml.sax.ContentHandler):
 			self.jsms['lv'] = 2
 			self.jsms['pm'] = (self.jsms['pm'] - self.pep['de'] - 1.007276466812)/self.jsms['pz']
 			self.jsms['pm'] += 1.007276466812
+			self.jsms['pm'] = round(self.jsms['pm'],4)
 			self.jsms['np'] = len(self.jsms['ms'])
 			if len(self.aas) > 0:
 				self.pep['as'] = self.aas
 			self.jsms['pe'] = self.pep
 			str = json.dumps(self.jsms)
+			str = re.sub('\.0,',',',str)
 			self.mhash.update(str.encode())
 			str += '\n'
 			if self.isGz == 0:

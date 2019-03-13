@@ -13,14 +13,14 @@ import time
 start = time.time()
 base_dir = '/mnt/ssd1/jsms/library/'
 script_dir = '/mnt/ssd1/jsms/library/scripts/'
-in_dir = base_dir + 'gpm/'
+in_dir = '/mnt/md0/libraries/gpm/'
 #print(in_dir)
 #dirs = [a for a in os.listdir(in_dir) if os.path.isdir(in_dir + a)]
 #for a in dirs:
 for d,b,c in os.walk(in_dir):
 	if len(c) == 0:
 		continue
-	od = re.sub('/gpm/','/lib/',d)
+	od = re.sub('\/mnt\/md0\/libraries\/gpm\/','/mnt/ssd1/jsms/library/lib/',d)
 	os.makedirs(od, exist_ok=True)
 	print('in = %s\nout = %s' % (d,od))
 	files = [f for f in os.listdir(d) if (f.find('.gz') == len(f) - 3)]
@@ -33,13 +33,15 @@ for d,b,c in os.walk(in_dir):
 	for f in sorted(files):
 		if os.path.isdir(f):
 			continue
+		if f.find('.gz') != len(f)-3:
+			continue
 		nf = re.sub('.gz$','',f)
 		ofile = od + '/%s.jsms' % (nf)
 		if os.path.isfile(ofile):
 			n += 1
 			s += 1
 			continue
-		subprocess.run(['gzip','-dk',f])
+		subprocess.run(['gzip','-dfk',f])
 		this_start = time.time()
 		print('\t%i/%i. %s' % (n,len(files),nf))
 		scr = script_dir + 'library_from_bioml.py'
